@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Password Strength Analyzer</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:linear-gradient(135deg,#f8fafc,#e2e8f0,#dbeafe);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px 20px;
+}
+
+.container{
+    width:100%;
+    max-width:1050px;
+    background:white;
+    border-radius:35px;
+    overflow:hidden;
+    box-shadow:0 20px 50px rgba(15,23,42,.08);
+}
+
+.header-banner{
+    background:linear-gradient(135deg,#3b82f6,#06b6d4);
+    padding:40px;
+}
+
+.title{
+    color:white;
+    font-size:40px;
+    font-weight:700;
+}
+
+.body-area{
+    padding:40px;
+}
+
+.back-btn{
+    display:inline-block;
+    margin-bottom:30px;
+    padding:12px 25px;
+    background:linear-gradient(135deg,#3b82f6,#06b6d4);
+    color:white;
+    border-radius:18px;
+    text-decoration:none;
+    font-weight:700;
+}
+
+.card{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:28px;
+    padding:28px;
+}
+
+.section-title{
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:15px;
+}
+
+.desc{
+    color:#64748b;
+    margin-bottom:20px;
+}
+
+input[type="text"]{
+    width:100%;
+    padding:18px;
+    border-radius:20px;
+    border:1px solid #cbd5e1;
+    margin-bottom:20px;
+    font-size:17px;
+}
+
+.generate{
+    width:100%;
+    padding:18px;
+    border:none;
+    border-radius:18px;
+    background:linear-gradient(135deg,#3b82f6,#06b6d4);
+    color:white;
+    font-size:20px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.result{
+    margin-top:25px;
+    padding:25px;
+    border-radius:20px;
+    text-align:center;
+}
+
+.weak{
+    background:#fff1f2;
+    border:2px solid #fca5a5;
+}
+
+.medium{
+    background:#fef9c3;
+    border:2px solid #fde047;
+}
+
+.strong{
+    background:#f0fdf4;
+    border:2px solid #86efac;
+}
+
+.result h2{
+    margin-bottom:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header-banner">
+<h1 class="title">PASSWORD STRENGTH ANALYZER</h1>
+</div>
+
+<div class="body-area">
+
+<a href="/" class="back-btn">← Back to Hash Tool</a>
+
+<form method="POST">
+
+<div class="card">
+
+<div class="section-title">Analyze Password</div>
+
+<p class="desc">
+Enter a password to check if it is Weak, Medium, or Strong.
+</p>
+
+<input type="text" name="password" placeholder="Enter password here..." required>
+
+<button class="generate" type="submit">
+Analyze Password
+</button>
+
+</div>
+
+</form>
+
+{% if result %}
+
+<div class="result
+{% if result.strength == 'Weak' %}weak{% endif %}
+{% if result.strength == 'Medium' %}medium{% endif %}
+{% if result.strength == 'Strong' %}strong{% endif %}
+">
+
+<h2>Password: {{ result.password }}</h2>
+<br>
+
+<div style="width:80%;margin:auto;background:#ddd;border-radius:20px;height:30px;overflow:hidden;">
+    <div style="
+        width:{{ result.percentage }}%;
+        height:100%;
+        background:
+        {% if result.strength == 'Weak' %}
+        #ef4444
+        {% elif result.strength == 'Medium' %}
+        #f59e0b
+        {% else %}
+        #22c55e
+        {% endif %};
+        text-align:center;
+        color:white;
+        line-height:30px;
+        font-weight:bold;">
+        {{ result.percentage }}%
+    </div>
+</div>
+
+<br>
+
+{% if result.found_in_rainbow %}
+<h3 style="color:red;">
+❌ Found In Rainbow Table Database
+</h3>
+{% else %}
+<h3 style="color:green;">
+✅ Not Found In Rainbow Table Database
+</h3>
+{% endif %}
+<h1>
+Strength:
+{{ result.strength }}
+</h1>
+<br>
+
+{% if result.strength != 'Strong' %}
+
+<h3>Reasons:</h3>
+
+<ul style="text-align:left;display:inline-block;">
+{% for reason in result.reasons %}
+<li>{{ reason }}</li>
+{% endfor %}
+</ul>
+
+<br><br>
+
+<h3>Suggested Strong Password:</h3>
+
+<h2>{{ result.suggestion }}</h2>
+
+{% endif %}
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</body>
+</html>
