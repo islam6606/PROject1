@@ -1,20 +1,30 @@
 import sqlite3
 import hashlib
+import os
 
 # دالة لتوليد الهاشات
 def generate_hashes(text):
-    text = text.strip()
     return {
-        'md5': hashlib.md5(text.encode()).hexdigest(),
-        'sha1': hashlib.sha1(text.encode()).hexdigest(),
-        'sha256': hashlib.sha256(text.encode()).hexdigest(),
-        'sha512': hashlib.sha512(text.encode()).hexdigest()
+        'md5': hashlib.md5(text.encode('utf-8', errors='ignore')).hexdigest(),
+        'sha1': hashlib.sha1(text.encode('utf-8', errors='ignore')).hexdigest(),
+        'sha256': hashlib.sha256(text.encode('utf-8', errors='ignore')).hexdigest(),
+        'sha512': hashlib.sha512(text.encode('utf-8', errors='ignore')).hexdigest()
     }
 
 # دالة بناء القاعدة
 def populate():
+    file_path = 'rockyou.txt'
+    
+    if not os.path.exists(file_path):
+        print(f"خطأ: ملف {file_path} غير موجود في المجلد!")
+        return
+
     conn = sqlite3.connect('rainbow_table.db')
     cursor = conn.cursor()
+
+    # تحسين أداء SQLite للتعامل مع البيانات الضخمة
+    cursor.execute('PRAGMA synchronous = OFF')
+    cursor.execute('PRAGMA journal_mode = MEMORY')
 
     # إنشاء الجدول
     cursor.execute('''
@@ -28,59 +38,49 @@ def populate():
         )
     ''')
 
-    # تحسين سرعة الأداء لقواعد بيانات SQLite
-    cursor.execute('PRAGMA synchronous = OFF')
-    cursor.execute('PRAGMA journal_mode = MEMORY')
-
-    batch_data = [] # مصفوفة لتخزين البيانات وضخها جملة واحدة
+    batch_size = 20000  # تقليل حجم الدفعة قليلاً لضمان استقرار الذاكرة
+    batch_data = []
     count = 0
-    target_limit = 200000 # الحد الجديد: أول 200 ألف كلمة مرور فقط
-    batch_size = 50000    # حجم الدفعة للإدخال في قاعدة البيانات
 
-    print("بدء قراءة الملف وتوليد الهاشات لأول 200 ألف كلمة...")
-    
-    try:
-        # قراءة الملف سطر بسطر (مرتب من الأكثر شيوعاً للأقل)
-        with open('rockyou.txt', 'r', encoding='latin-1') as f:
-            for line in f:
-                if count >= target_limit:
-                    break
-                
+    print("بدء معالجة الملف، سيتم تخطي أي سطر يحتوي على رموز تالفة...")
+
+    # فتح الملف مع إضافة errors='ignore' لتفادي الانهيار بسبب الرموز الغريبة
+    with open(file_path, 'r', encoding='latin-1', errors='ignore') as f:
+        for line in f:
+            try:
                 password = line.strip()
                 if not password: 
                     continue
                 
                 hashes = generate_hashes(password)
-                
-                # إضافة البيانات للمصفوفة
                 batch_data.append((password, hashes['md5'], hashes['sha1'], hashes['sha256'], hashes['sha512']))
                 count += 1
-                
-                # إدخال البيانات عند الوصول لحجم الدفعة المحدد
-                if count % batch_size == 0:
+
+                # عند الوصول للحجم المحدد، يتم الإدخال دفعة واحدة
+                if len(batch_data) >= batch_size:
                     cursor.executemany('''
                         INSERT OR IGNORE INTO rainbow_table (original_password, md5_hash, sha1_hash, sha256_hash, sha512_hash)
                         VALUES (?, ?, ?, ?, ?)
                     ''', batch_data)
-                    conn.commit() # حفظ التغييرات
-                    batch_data = [] # تفريغ المصفوفة للمجموعة القادمة
-                    print(f"تمت معالجة وإدخال {count} كلمة بنجاح...")
+                    conn.commit()
+                    print(f"تمت معالجة وإدخال {count} كلمة...")
+                    batch_data = []  # تفريغ الدفعة لافساح المجال في الذاكرة
+                    
+            except Exception as e:
+                # في حال حدوث أي خطأ في سطر معين، يتم طباعته وتخطيه لاستكمال بقية الملف
+                print(f"تم تخطي سطر بسبب خطأ: {e}")
+                continue
 
-            # إدخال أي بيانات متبقية لم تصل لحجم الدفعة في نهاية الملف
-            if batch_data:
-                cursor.executemany('''
-                    INSERT OR IGNORE INTO rainbow_table (original_password, md5_hash, sha1_hash, sha256_hash, sha512_hash)
-                    VALUES (?, ?, ?, ?, ?)
-                ''', batch_data)
-                conn.commit()
-
-    except FileNotFoundError:
-        print("خطأ: ملف rockyou.txt غير موجود في المجلد الحالي!")
-        conn.close()
-        return
+        # إدخال المتبقي من البيانات التي لم تصل لحجم الدفعة الكاملة
+        if batch_data:
+            cursor.executemany('''
+                INSERT OR IGNORE INTO rainbow_table (original_password, md5_hash, sha1_hash, sha256_hash, sha512_hash)
+                VALUES (?, ?, ?, ?, ?)
+            ''', batch_data)
+            conn.commit()
 
     conn.close()
-    print(f"تم الانتهاء بنجاح! القاعدة تحتوي الآن على {count} كلمة مرور من الأكثر شيوعاً.")
+    print(f"\nتم الانتهاء بنجاح! إجمالي الكلمات المعالجة: {count}")
 
 if __name__ == '__main__':
     populate()
