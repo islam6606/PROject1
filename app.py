@@ -4,7 +4,8 @@ import os
 import sqlite3
 import secrets
 import time
-
+import random
+import string
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 DB_PATH = 'rainbow_table.db'
@@ -101,7 +102,66 @@ def hash_with_salt(password, salt, algo):
     h = hashlib.new(algo)
     h.update(salted.encode())
     return h.hexdigest()
+def check_password_exists(password, algo):
+    password_hash = hash_text(password, algo)
+    found = lookup_hash(password_hash, algo)
+    return found is not None
+def analyze_password(password):
 
+    score = 0
+    reasons = []
+
+    if len(password) >= 8:
+        score += 1
+    else:
+        reasons.append("Password is too short")
+
+    if any(c.islower() for c in password):
+        score += 1
+    else:
+        reasons.append("No lowercase letters")
+
+    if any(c.isupper() for c in password):
+        score += 1
+    else:
+        reasons.append("No uppercase letters")
+
+    if any(c.isdigit() for c in password):
+        score += 1
+    else:
+        reasons.append("No numbers")
+
+    if any(not c.isalnum() for c in password):
+        score += 1
+    else:
+        reasons.append("No special characters")
+
+    if score <= 2:
+        strength = "Weak"
+    elif score <= 4:
+        strength = "Medium"
+    else:
+        strength = "Strong"
+
+    suggestion = password
+
+    if not any(c.isupper() for c in password):
+        suggestion += "A"
+
+    if not any(c.isdigit() for c in password):
+        suggestion += "9"
+
+    if not any(not c.isalnum() for c in password):
+        suggestion += "@"
+
+    if len(suggestion) < 8:
+        suggestion += "2026"
+
+    found_in_rainbow = check_password_exists(password, 'md5')
+
+    percentage = score * 20
+
+    return strength, reasons, suggestion, found_in_rainbow, percentage
 @app.route('/rainbow', methods=['GET', 'POST'])
 def rainbow():
     data = None
@@ -138,7 +198,113 @@ def salt_demo():
             'cracked_salted': cracked_salted,
         }
     return render_template('salt.html', demo=demo)
+@app.route('/checker', methods=['GET', 'POST'])
+def checker():
+    result = None
 
+    if request.method == 'POST':
+        password = request.form.get('password')
+        algo = request.form.get('algo', 'sha256')
+
+        exists = check_password_exists(password, algo)
+
+        result = {
+            'password': password,
+            'algo': algo.upper(),
+            'exists': exists
+        }
+
+    return render_template('checker.html', result=result)    
+@app.route('/strength', methods=['GET', 'POST'])
+def strength():
+
+    result = None
+
+    if request.method == 'POST':
+        password = request.form.get('password')
+        (
+           strength_level,
+           reasons,
+           suggestion,
+           found_in_rainbow,
+           percentage
+        ) = analyze_password(password)  
+      
+        result = {
+          'password': password,
+    'strength': strength_level,
+    'reasons': reasons,
+    'suggestion': suggestion,
+    'found_in_rainbow': found_in_rainbow,
+    'percentage': percentage
+
+        }
+
+    return render_template('strength.html', result=result)
+def generate_password(length, upper, lower, numbers, symbols):
+
+    chars = ""
+
+    if upper:
+        chars += string.ascii_uppercase
+
+    if lower:
+        chars += string.ascii_lowercase
+
+    if numbers:
+        chars += string.digits
+
+    if symbols:
+        chars += "!@#$%^&*"
+
+    if not chars:
+        return None
+
+    password = ''.join(random.choice(chars) for _ in range(length))
+
+    return password
+
+
+@app.route('/generator', methods=['GET', 'POST'])
+def generator():
+
+    result = None
+
+    if request.method == 'POST':
+
+        length = int(request.form.get('length', 12))
+
+        upper = request.form.get('upper') == 'on'
+        lower = request.form.get('lower') == 'on'
+        numbers = request.form.get('numbers') == 'on'
+        symbols = request.form.get('symbols') == 'on'
+
+        password = generate_password(
+            length,
+            upper,
+            lower,
+            numbers,
+            symbols
+        )
+
+        if password:
+
+            (
+                strength_level,
+                reasons,
+                suggestion,
+                found_in_rainbow,
+                percentage
+            ) = analyze_password(password)
+
+            result = {
+                'password': password,
+                'strength': strength_level,
+                'percentage': percentage,
+                'found_in_rainbow': found_in_rainbow
+            }
+
+    return render_template('generator.html', result=result)
 # =====================================================
 
 if __name__ == '__main__':
