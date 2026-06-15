@@ -240,6 +240,33 @@ input[type="radio"] {
     word-break: break-word;
 }
 
+
+.tools-buttons{
+    margin-top:25px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.tool-btn{
+    display:block;
+    text-align:center;
+    padding:16px;
+    background:linear-gradient(135deg,#3b82f6,#06b6d4);
+    color:white;
+    text-decoration:none;
+    border-radius:18px;
+    font-size:16px;
+    font-weight:700;
+    transition:.3s;
+}
+
+.tool-btn:hover{
+    transform:translateY(-3px);
+    box-shadow:0 15px 30px rgba(59,130,246,.2);
+}
+
+
 /* RESPONSIVE DESIGN */
 @media(max-width: 900px){
     .main-form {
@@ -335,13 +362,24 @@ input[type="radio"] {
             </div>
             {% endif %}
 
+            <div class="tools-buttons">
+   <a href="/rainbow" class="tool-btn">🔍 Rainbow Table Lookup</a>
+
+<a href="/salt" class="tool-btn">🔐 Salt Protection Demo</a>
+
+<a href="/checker" class="tool-btn">🕵 Password Checker</a>
+
+<a href="/strength" class="tool-btn">🛡 Password Strength Analyzer</a>
+
+<!-- حطه هنا -->
+
+<a href="/generator" class="tool-btn">⚡ Password Generator</a>
+
+</div>
+            </div>
+
         </div>
 
     </form>
 
 </div>
-
-    <br><a href="/rainbow" style="display:inline-block;margin:20px 10px 20px 40px;padding:14px 28px;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:white;border-radius:18px;text-decoration:none;font-size:16px;font-weight:700;">🔍 Rainbow Table Lookup</a><a href="/salt" style="display:inline-block;margin:20px 10px;padding:14px 28px;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:white;border-radius:18px;text-decoration:none;font-size:16px;font-weight:700;">🔐 Salt Protection Demo</a>
-
-</body>
-</html>
