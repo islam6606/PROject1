@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rainbow Table Lookup</title>
+<title>Salt Protection Demo</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
 
@@ -68,6 +68,7 @@ body {
 }
 
 .section-title { color:#0f172a; margin-bottom:12px; font-size:24px; font-weight:700; }
+
 .desc { color:#64748b; margin-bottom:20px; line-height:1.7; font-size:15px; }
 
 input[type="text"] {
@@ -76,13 +77,17 @@ input[type="text"] {
     border: 1px solid #cbd5e1;
     border-radius: 20px;
     padding: 18px 20px;
+    color: #0f172a;
     font-size: 17px;
     outline: none;
     transition: .3s;
     margin-bottom: 20px;
 }
 
-input[type="text"]:focus { border-color:#3b82f6; box-shadow:0 0 20px rgba(59,130,246,.15); }
+input[type="text"]:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 20px rgba(59,130,246,.15);
+}
 
 .algorithms { display:flex; flex-direction:column; gap:15px; margin-bottom:20px; }
 
@@ -124,53 +129,53 @@ input[type="radio"] { transform:scale(1.3); accent-color:#3b82f6; }
 
 .generate:hover { transform:translateY(-3px); box-shadow:0 15px 30px rgba(59,130,246,.2); }
 
-.result-card {
-    border-radius: 25px;
-    padding: 28px;
-    border: 2px solid;
+.demo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+    margin-top: 30px;
 }
 
-.found    { background:#f0fdf4; border-color:#86efac; }
-.notfound { background:#fff1f2; border-color:#fca5a5; }
+.demo-card { border-radius: 25px; padding: 25px; border: 2px solid; }
+.danger { background:#fff1f2; border-color:#fca5a5; }
+.safe   { background:#f0fdf4; border-color:#86efac; }
 
-.result-card h3 { font-size:20px; font-weight:700; margin-bottom:20px; }
-.found h3    { color:#16a34a; }
-.notfound h3 { color:#dc2626; }
+.demo-card h3 { font-size:18px; font-weight:700; margin-bottom:18px; }
+.danger h3 { color:#dc2626; }
+.safe h3   { color:#16a34a; }
 
 .row { margin-bottom:14px; }
 
 .lbl {
-    font-size:11px;
-    font-weight:700;
-    color:#64748b;
-    text-transform:uppercase;
-    margin-bottom:5px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 5px;
 }
 
 .val {
-    font-size:14px;
-    color:#0f172a;
-    background:white;
-    padding:10px 14px;
-    border-radius:12px;
-    word-break:break-all;
-    border:1px solid #e2e8f0;
+    font-size: 13px;
+    color: #0f172a;
+    background: white;
+    padding: 10px 14px;
+    border-radius: 12px;
+    word-break: break-all;
+    border: 1px solid #e2e8f0;
 }
 
-.timer {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    padding: 10px 20px;
-    border-radius: 50px;
-    font-size: 15px;
+.status {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
     font-weight: 700;
-    color: #2563eb;
-    margin-top: 10px;
+    font-size: 13px;
 }
 
+.status.bad  { background:#dc2626; color:white; }
+.status.good { background:#16a34a; color:white; }
+
+@media(max-width:900px){ .demo-grid{ grid-template-columns:1fr; } }
 @media(max-width:600px){ .body-area{ padding:20px; } .title{ font-size:30px; } }
 </style>
 </head>
@@ -178,8 +183,8 @@ input[type="radio"] { transform:scale(1.3); accent-color:#3b82f6; }
 <div class="container">
 
     <div class="header-banner">
-        <h1 class="title">RAINBOW TABLE</h1>
-        <div class="badge">Hash Lookup</div>
+        <h1 class="title">SALT PROTECTION</h1>
+        <div class="badge">Security Demo</div>
     </div>
 
     <div class="body-area">
@@ -187,53 +192,66 @@ input[type="radio"] { transform:scale(1.3); accent-color:#3b82f6; }
 
         <form method="POST">
             <div class="card">
-                <div class="section-title">Crack a Hash</div>
+                <div class="section-title">Enter a Password to Test</div>
                 <p class="desc">
-                    Paste any hash below and select the algorithm.
-                    The system will search the Rainbow Table database and try to find the original password.
+                    Enter any password and see the difference between hashing without Salt (dangerous)
+                    and hashing with Salt (safe). Try simple passwords like:
+                    <strong>123456</strong> or <strong>password</strong>
                 </p>
-                <input type="text" name="hash_input" placeholder="Paste hash here..." required>
+                <input type="text" name="password" placeholder="Enter password here..." required>
 
                 <div class="algorithms">
-                    <div class="algo"><label>MD5<input type="radio" name="algo" value="md5" checked></label></div>
+                    <div class="algo"><label>MD5<input type="radio" name="algo" value="md5"></label></div>
                     <div class="algo"><label>SHA1<input type="radio" name="algo" value="sha1"></label></div>
-                    <div class="algo"><label>SHA256<input type="radio" name="algo" value="sha256"></label></div>
+                    <div class="algo"><label>SHA256<input type="radio" name="algo" value="sha256" checked></label></div>
                     <div class="algo"><label>SHA512<input type="radio" name="algo" value="sha512"></label></div>
                 </div>
 
-                <button class="generate" type="submit">Search Rainbow Table</button>
+                <button class="generate" type="submit">Run Salt Demo</button>
             </div>
         </form>
 
-        {% if data %}
-        <div class="result-card {% if data.cracked %}found{% else %}notfound{% endif %}">
+        {% if demo %}
+        <div class="demo-grid">
 
-            {% if data.cracked %}
-                <h3>✅ Hash Cracked Successfully!</h3>
-            {% else %}
-                <h3>❌ Hash Not Found in Database</h3>
-            {% endif %}
-
-            <div class="row">
-                <div class="lbl">Hash Input</div>
-                <div class="val">{{ data.hash_input }}</div>
+            <div class="demo-card danger">
+                <h3>⚠️ Without Salt — VULNERABLE</h3>
+                <div class="row">
+                    <div class="lbl">Password</div>
+                    <div class="val">{{ demo.password }}</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">{{ demo.algo }} Hash (no salt)</div>
+                    <div class="val">{{ demo.hash_no_salt }}</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Rainbow Table Result</div>
+                    {% if demo.cracked %}
+                        <span class="status bad">❌ CRACKED — Original: {{ demo.cracked }}</span>
+                    {% else %}
+                        <span class="status good">✅ Not found in database</span>
+                    {% endif %}
+                </div>
             </div>
 
-            <div class="row">
-                <div class="lbl">Algorithm</div>
-                <div class="val">{{ data.algo }}</div>
-            </div>
-
-            {% if data.cracked %}
-            <div class="row">
-                <div class="lbl">Original Password</div>
-                <div class="val">{{ data.cracked }}</div>
-            </div>
-            {% endif %}
-
-            <!-- Benchmarking: عرض وقت البحث -->
-            <div class="timer">
-                ⏱ Search completed in {{ data.elapsed }} seconds
+            <div class="demo-card safe">
+                <h3>✅ With Salt — PROTECTED</h3>
+                <div class="row">
+                    <div class="lbl">Generated Salt (random)</div>
+                    <div class="val">{{ demo.salt }}</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">{{ demo.algo }} Hash (with salt)</div>
+                    <div class="val">{{ demo.hash_salted }}</div>
+                </div>
+                <div class="row">
+                    <div class="lbl">Rainbow Table Result</div>
+                    {% if demo.cracked_salted %}
+                        <span class="status bad">❌ CRACKED</span>
+                    {% else %}
+                        <span class="status good">✅ NOT FOUND — Salt works!</span>
+                    {% endif %}
+                </div>
             </div>
 
         </div>
