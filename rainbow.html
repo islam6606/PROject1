@@ -3,16 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hash File Online</title>
-
+<title>Rainbow Table Lookup</title>
 <style>
-/* تم استبدال الخط المخصص بخط Arial العادي */
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
+* { margin:0; padding:0; box-sizing:border-box; font-family:Arial,sans-serif; }
 
 body {
     min-height: 100vh;
@@ -23,7 +16,6 @@ body {
     padding: 40px 20px;
 }
 
-/* CONTAINER */
 .container {
     width: 100%;
     max-width: 1050px;
@@ -33,7 +25,6 @@ body {
     box-shadow: 0 20px 50px rgba(15, 23, 42, .08);
 }
 
-/* HEADER BANNER */
 .header-banner {
     background: linear-gradient(135deg, #3b82f6, #06b6d4);
     padding: 40px;
@@ -43,14 +34,10 @@ body {
     flex-wrap: wrap;
 }
 
-.title {
-    color: white;
-    font-size: 40px;
-    font-weight: 700;
-}
+.title { color:white; font-size:40px; font-weight:700; }
 
 .badge {
-    background: rgba(255, 255, 255, .18);
+    background: rgba(255,255,255,.18);
     color: white;
     padding: 12px 24px;
     border-radius: 50px;
@@ -58,137 +45,46 @@ body {
     font-size: 14px;
 }
 
-/* MAIN LAYOUT STRUCTURE */
-.main-form {
-    display: grid;
-    grid-template-columns: 1fr 330px;
-    gap: 30px;
-    padding: 40px;
+.body-area { padding: 40px; }
+
+.back-btn {
+    display: inline-block;
+    margin-bottom: 30px;
+    padding: 12px 25px;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    color: white;
+    border-radius: 18px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
 }
 
-.left-column {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-}
-
-.right-column {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 28px;
-    padding: 30px;
-    height: fit-content;
-}
-
-/* CARD */
 .card {
     background: #f8fafc;
     border: 1px solid #e2e8f0;
     border-radius: 28px;
     padding: 28px;
+    margin-bottom: 30px;
 }
 
-.section-title {
-    color: #0f172a;
-    margin-bottom: 12px;
-    font-size: 24px;
-    font-weight: 700;
-}
+.section-title { color:#0f172a; margin-bottom:12px; font-size:24px; font-weight:700; }
+.desc { color:#64748b; margin-bottom:20px; line-height:1.7; font-size:15px; }
 
-.desc {
-    color: #64748b;
-    margin-bottom: 20px;
-    line-height: 1.7;
-    font-size: 15px;
-}
-
-/* TEXTAREA */
-textarea {
+input[type="text"] {
     width: 100%;
     background: white;
     border: 1px solid #cbd5e1;
     border-radius: 20px;
-    padding: 20px;
-    color: #0f172a;
+    padding: 18px 20px;
     font-size: 17px;
-    resize: none;
     outline: none;
     transition: .3s;
+    margin-bottom: 20px;
 }
 
-textarea:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 20px rgba(59, 130, 246, .15);
-}
+input[type="text"]:focus { border-color:#3b82f6; box-shadow:0 0 20px rgba(59,130,246,.15); }
 
-/* UPLOAD FILE BOX */
-.upload-box {
-    border: 2px dashed #cbd5e1;
-    border-radius: 25px;
-    padding: 50px 20px;
-    text-align: center;
-    background: white;
-    transition: .3s;
-}
-
-.upload-box:hover {
-    border-color: #3b82f6;
-    background: #eff6ff;
-}
-
-.upload-box h2 {
-    color: #0f172a;
-    font-size: 28px;
-    margin-bottom: 12px;
-    font-weight: 700;
-}
-
-.upload-box p {
-    color: #64748b;
-    margin-bottom: 25px;
-}
-
-input[type="file"] {
-    display: none;
-}
-
-/* BUTTONS */
-.upload-btn,
-.generate {
-    background: linear-gradient(135deg, #3b82f6, #06b6d4);
-    color: white;
-    border: none;
-    border-radius: 18px;
-    cursor: pointer;
-    transition: .3s;
-}
-
-.upload-btn {
-    display: inline-block;
-    padding: 15px 30px;
-    font-weight: 600;
-}
-
-.generate {
-    width: 100%;
-    margin-top: 30px;
-    padding: 18px;
-    font-size: 20px;
-    font-weight: 700;
-}
-
-.upload-btn:hover,
-.generate:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 30px rgba(59, 130, 246, .2);
-}
-
-/* ALGORITHMS LIST */
-.algorithms {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+.algorithms { display:flex; flex-direction:column; gap:15px; margin-bottom:20px; }
 
 .algo {
     background: white;
@@ -198,10 +94,7 @@ input[type="file"] {
     transition: .3s;
 }
 
-.algo:hover {
-    border-color: #3b82f6;
-    transform: translateX(5px);
-}
+.algo:hover { border-color:#3b82f6; transform:translateX(5px); }
 
 .algo label {
     display: flex;
@@ -214,134 +107,139 @@ input[type="file"] {
     width: 100%;
 }
 
-input[type="radio"] {
-    transform: scale(1.3);
-    accent-color: #3b82f6;
+input[type="radio"] { transform:scale(1.3); accent-color:#3b82f6; }
+
+.generate {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    color: white;
+    border: none;
+    border-radius: 18px;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .3s;
 }
 
-/* RESULT BOX */
-.result {
-    margin-top: 25px;
-    background: white;
+.generate:hover { transform:translateY(-3px); box-shadow:0 15px 30px rgba(59,130,246,.2); }
+
+.result-card {
+    border-radius: 25px;
+    padding: 28px;
+    border: 2px solid;
+}
+
+.found    { background:#f0fdf4; border-color:#86efac; }
+.notfound { background:#fff1f2; border-color:#fca5a5; }
+
+.result-card h3 { font-size:20px; font-weight:700; margin-bottom:20px; }
+.found h3    { color:#16a34a; }
+.notfound h3 { color:#dc2626; }
+
+.row { margin-bottom:14px; }
+
+.lbl {
+    font-size:11px;
+    font-weight:700;
+    color:#64748b;
+    text-transform:uppercase;
+    margin-bottom:5px;
+}
+
+.val {
+    font-size:14px;
+    color:#0f172a;
+    background:white;
+    padding:10px 14px;
+    border-radius:12px;
+    word-break:break-all;
+    border:1px solid #e2e8f0;
+}
+
+.timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #eff6ff;
     border: 1px solid #bfdbfe;
-    border-radius: 20px;
-    padding: 22px;
-}
-
-.result h3 {
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 700;
     color: #2563eb;
-    margin-bottom: 12px;
-    font-size: 18px;
+    margin-top: 10px;
 }
 
-.result p {
-    color: #334155;
-    line-height: 1.8;
-    word-break: break-word;
-}
-
-/* RESPONSIVE DESIGN */
-@media(max-width: 900px){
-    .main-form {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media(max-width: 600px){
-    .header-banner {
-        gap: 20px;
-    }
-    .title {
-        font-size: 30px;
-    }
-    .main-form {
-        padding: 20px;
-    }
-}
+@media(max-width:600px){ .body-area{ padding:20px; } .title{ font-size:30px; } }
 </style>
 </head>
 <body>
-
 <div class="container">
 
     <div class="header-banner">
-        <h1 class="title">HASH TOOL</h1>
-        <div class="badge">Secure Encryption Generator</div>
+        <h1 class="title">RAINBOW TABLE</h1>
+        <div class="badge">Hash Lookup</div>
     </div>
 
-    <form method="POST" enctype="multipart/form-data" class="main-form">
+    <div class="body-area">
+        <a href="/" class="back-btn">← Back to Hash Tool</a>
 
-        <div class="left-column">
-            
+        <form method="POST">
             <div class="card">
-                <div class="section-title">Text To Hash</div>
-                <p class="desc">Convert any text into a secure encrypted hash value.</p>
-                <textarea name="text" placeholder="Enter your text here..." rows="5"></textarea>
+                <div class="section-title">Crack a Hash</div>
+                <p class="desc">
+                    Paste any hash below and select the algorithm.
+                    The system will search the Rainbow Table database and try to find the original password.
+                </p>
+                <input type="text" name="hash_input" placeholder="Paste hash here..." required>
+
+                <div class="algorithms">
+                    <div class="algo"><label>MD5<input type="radio" name="algo" value="md5" checked></label></div>
+                    <div class="algo"><label>SHA1<input type="radio" name="algo" value="sha1"></label></div>
+                    <div class="algo"><label>SHA256<input type="radio" name="algo" value="sha256"></label></div>
+                    <div class="algo"><label>SHA512<input type="radio" name="algo" value="sha512"></label></div>
+                </div>
+
+                <button class="generate" type="submit">Search Rainbow Table</button>
+            </div>
+        </form>
+
+        {% if data %}
+        <div class="result-card {% if data.cracked %}found{% else %}notfound{% endif %}">
+
+            {% if data.cracked %}
+                <h3>✅ Hash Cracked Successfully!</h3>
+            {% else %}
+                <h3>❌ Hash Not Found in Database</h3>
+            {% endif %}
+
+            <div class="row">
+                <div class="lbl">Hash Input</div>
+                <div class="val">{{ data.hash_input }}</div>
             </div>
 
-            <div class="card">
-                <div class="section-title">Upload File</div>
-                <p class="desc">Upload files from your computer to generate hashes.</p>
-                <div class="upload-box">
-                    <h2>Select File</h2>
-                    <p>Choose file from your device</p>
-                    <label for="file-upload" class="upload-btn">Browse File</label>
-                    <input id="file-upload" type="file" name="file">
-                </div>
+            <div class="row">
+                <div class="lbl">Algorithm</div>
+                <div class="val">{{ data.algo }}</div>
             </div>
 
-        </div>
-
-        <div class="right-column">
-            
-            <div class="section-title" style="margin-bottom: 25px;">Hash Algorithms</div>
-
-            <div class="algorithms">
-                <div class="algo">
-                    <label>
-                        MD5
-                        <input type="radio" name="algo" value="md5" checked>
-                    </label>
-                </div>
-
-                <div class="algo">
-                    <label>
-                        SHA1
-                        <input type="radio" name="algo" value="sha1">
-                    </label>
-                </div>
-
-                <div class="algo">
-                    <label>
-                        SHA256
-                        <input type="radio" name="algo" value="sha256">
-                    </label>
-                </div>
-
-                <div class="algo">
-                    <label>
-                        SHA512
-                        <input type="radio" name="algo" value="sha512">
-                    </label>
-                </div>
-            </div>
-
-            <button class="generate" type="submit">Generate Hash</button>
-
-            {% if result %}
-            <div class="result">
-                <h3>Hash Result</h3>
-                <p>{{ result }}</p>
+            {% if data.cracked %}
+            <div class="row">
+                <div class="lbl">Original Password</div>
+                <div class="val">{{ data.cracked }}</div>
             </div>
             {% endif %}
 
-        </div>
+            <!-- Benchmarking: عرض وقت البحث -->
+            <div class="timer">
+                ⏱ Search completed in {{ data.elapsed }} seconds
+            </div>
 
-    </form>
+        </div>
+        {% endif %}
+    </div>
 
 </div>
-
-    <br><a href="/rainbow" style="display:inline-block;margin:20px 10px 20px 40px;padding:14px 28px;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:white;border-radius:18px;text-decoration:none;font-size:16px;font-weight:700;">🔍 Rainbow Table Lookup</a><a href="/salt" style="display:inline-block;margin:20px 10px;padding:14px 28px;background:linear-gradient(135deg,#3b82f6,#06b6d4);color:white;border-radius:18px;text-decoration:none;font-size:16px;font-weight:700;">🔐 Salt Protection Demo</a>
-
 </body>
 </html>
